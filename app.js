@@ -8,6 +8,16 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 
+// Load system scripts
+var chkexpire = require('./system/chkexpire');
+var dbctrl = require('./system/nsupdate');
+var dbctrl = require('./system/dbctrl');
+
+// RESTful APIs
+var adduser = require('./routes/adduser');
+var deluser = require('./routes/deluser');
+var update = require('./routes/deluser');
+
 var app = express();
 
 // view engine setup
@@ -24,6 +34,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+
+// Mapping RESTful APIs
+app.use('/adduser', adduser);
+app.use('/deluser', deluser);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
