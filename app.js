@@ -10,7 +10,6 @@ var users = require('./routes/users');
 
 // Load system scripts
 var chkexpire = require('./system/chkexpire');
-var dbctrl = require('./system/nsupdate');
 var dbctrl = require('./system/dbctrl');
 
 // RESTful APIs

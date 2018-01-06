@@ -117,10 +117,11 @@ function addAddr (id, ip, callback)
     // INSERT INTO bind_info(id, ip, update_time)
     // VALUES('kjg', '8.8.8.8',
     //  (select strftime('%Y%m%d%H%M%S',datetime('now','localtime')))
-    var query = 'INSERT INTO bind_info(id, ip, udpate_time) '
+    var query = 'INSERT OR REPLACE INTO bind_info(id, ip, update_time) '
         + 'VALUES(\'' + id + '\',\'' + ip + '\','
         + '(SELECT strftime(\'%Y%m%d%H%M%S\', '
-        + 'datetime(\'now\',\'localtime\')));';
+        + 'datetime(\'now\',\'localtime\'))));';
+    console.log(query);
 
     db.serialize(() => {
         db.run(query, (err) => {

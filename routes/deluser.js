@@ -39,14 +39,7 @@ router.post('/', function(req, res, next) {
 }, function(req, res) {
     // bind 정보 제거
     nsupdate.delAddr(req.body.id, (result) => {
-        if ( result.result === 'success' )
-        {
-            res.send('{"result":"success"}');
-        }
-        else
-        {
-            res.send('{"result":"error","msg":"' + result.msg + '"}');
-        }
+        res.send('{"result":"success"}');
     });
 });
 
