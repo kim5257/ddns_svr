@@ -37,7 +37,7 @@ router.post('/', function(req, res, next) {
 
 }, function(req, res) {
     // bind 정보 추가
-    nsupdate.addAddr(req.id, req.ip, (result) => {
+    nsupdate.addAddr(req.body.id, req.body.ip, (result) => {
         res.send('{"result":"successed"}');
     });
 });
