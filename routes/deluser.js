@@ -1,4 +1,6 @@
 var express = require('express');
+var dbctrl = require('../system/dbctrl');
+var nsupdate = require('../system/nsupdate');
 var router = express.Router();
 
 /* POST adduser listing. */
@@ -6,11 +8,46 @@ router.post('/', function(req, res, next) {
     console.log('in deluser');
     console.log(req.body);
 
-    // DB로부터 계정정보 삭제
+    // 비밀번호 확인
+    dbctrl.chkValidUser(req.body.id, req.body.pw, (result) => {
+        if( result.result === 'success' )
+        {
+            next();
+        }
+        else
+        {
+            // 에러로 결과 전달
+            res.send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
+}, function(req, res, next) {
+    // 사용자 정보 제거
+    console.log(req.body);
 
+    dbctrl.delUser(req.body.id, req.body.pw, (result) => {
+        if ( result.result === 'success' )
+        {
+            next();
+        }
+        else
+        {
+            res.send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
+
+
+}, function(req, res) {
     // bind 정보 제거
-
-    res.send('{"result":"successed"}');
+    nsupdate.delAddr(req.body.id, (result) => {
+        if ( result.result === 'success' )
+        {
+            res.send('{"result":"success"}');
+        }
+        else
+        {
+            res.send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
 });
 
 module.exports = router;
