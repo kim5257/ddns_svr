@@ -48,6 +48,12 @@ router.post('/', function(req, res, next) {
     });
 
 }, function(req, res) {
+
+    // 우선 bind 정보를 제거
+    nsupdate.delAddr(req.body.id, (result) => {
+        // Do nothing.
+    });
+
     // bind 정보 추가
     nsupdate.addAddr(req.body.id, req.body.ip, (result) => {
         res.send('{"result":"successed"}');
