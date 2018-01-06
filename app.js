@@ -16,7 +16,7 @@ var dbctrl = require('./system/dbctrl');
 // RESTful APIs
 var adduser = require('./routes/adduser');
 var deluser = require('./routes/deluser');
-var update = require('./routes/deluser');
+var update = require('./routes/update');
 
 var app = express();
 
@@ -38,6 +38,7 @@ app.use('/users', users);
 // Mapping RESTful APIs
 app.use('/adduser', adduser);
 app.use('/deluser', deluser);
+app.use('/update', update);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
