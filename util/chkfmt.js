@@ -1,3 +1,5 @@
+var ip = require('ip');
+
 function chkAddUser (body, callback)
 {
     if ( ( body.id == null ) ||
@@ -21,7 +23,8 @@ function chkUpdate (body, callback)
 {
     if ( ( body.id == null ) ||
         ( body.pw == null ) ||
-        ( body.ip == null ) )
+        ( body.ip == null ) ||
+        ( ip.isV4Format(body.ip) === false ) )
     {
         callback({result: 'error', msg: '잘못된 형식입니다.'});
     }
