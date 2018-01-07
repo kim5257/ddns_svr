@@ -11,25 +11,40 @@ var db = new sqlite3.Database('./db/data.db', (err) => {
 
 function chkDupUser (id, pw, callback)
 {
-    var query = 'SELECT count() as cnt FROM users ' +
-        'where id=\'' + id + '\';';
+    var query = 'SELECT '
+        + '(SELECT count() FROM users WHERE id=\'' + id + '\') as duplication'
+        + '(SELECT count() FROM reserved_id WHERE id=\'' + id + '\') as reserved;'
+
     console.log(query);
 
     db.serialize(() => {
         db.get(query, (err, row) => {
-            if ( err ) {
-                console.error(err.message);
-            }
-
-            console.log('Result: ' + parseInt(row.cnt, 10));
-            if (0 < parseInt(row.cnt, 10))
+            if ( err )
             {
-                // 에러
-                callback({result: 'error', msg: '이미 등록된 ID입니다.'});
+                console.error(err.message);
+                callback({result: 'error', msg: err.message});
             }
             else
             {
-                callback({result: 'success', msg: null});
+                console.log('Result: ' + row);
+
+                var duplication = parseInt(row.duplication, 10);
+                var reserved = parseInt(row.reserved, 10);
+
+                if (0 < duplication)
+                {
+                    // 에러
+                    callback({result: 'error', msg: '이미 등록된 ID 입니다.'});
+                }
+                else if( 0 < reserved )
+                {
+                    // 에러
+                    callback({result: 'error', msg: '예약된 ID 입니다.'});
+                }
+                else
+                {
+                    callback({result: 'success', msg: null});
+                }
             }
         });
     });
