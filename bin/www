@@ -7,19 +7,26 @@
 var app = require('../app');
 var debug = require('debug')('ddns-svr:server');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
+
+var certOpts = {
+    key: fs.readFileSync('./.cert/key.pem'),
+    cert: fs.readFileSync('./.cert/cert.pem')
+}
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '443');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer(certOpts, app);
 
 /**
  * Listen on provided port, on all network interfaces.
