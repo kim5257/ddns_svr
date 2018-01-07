@@ -12,7 +12,7 @@ var db = new sqlite3.Database('./db/data.db', (err) => {
 function chkDupUser (id, pw, callback)
 {
     var query = 'SELECT '
-        + '(SELECT count() FROM users WHERE id=\'' + id + '\') as duplication'
+        + '(SELECT count() FROM users WHERE id=\'' + id + '\') as duplication,'
         + '(SELECT count() FROM reserved_id WHERE id=\'' + id + '\') as reserved;'
 
     console.log(query);
@@ -52,7 +52,7 @@ function chkDupUser (id, pw, callback)
 
 function chkValidUser (id, pw, callback)
 {
-    var query = 'select ' +
+    var query = 'SELECT ' +
         '(SELECT count() FROM users where id=\'' + id + '\') as exist,' +
         '(SELECT count() FROM users where id=\'' + id + '\' and passwd=\'' + pw + '\') as valid;'
     console.log(query);
