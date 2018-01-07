@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
+const sha3_512 = require('js-sha3').sha3_512;
 
 var db = new sqlite3.Database('./db/data.db', (err) => {
     if ( err )
@@ -8,6 +9,10 @@ var db = new sqlite3.Database('./db/data.db', (err) => {
     console.log('Connected to the SQLite database.');
 });
 
+function toHash (pw)
+{
+    return sha3_512(pw);
+}
 
 function chkDupUser (id, pw, callback)
 {
@@ -54,7 +59,7 @@ function chkValidUser (id, pw, callback)
 {
     var query = 'SELECT ' +
         '(SELECT count() FROM users where id=\'' + id + '\') as exist,' +
-        '(SELECT count() FROM users where id=\'' + id + '\' and passwd=\'' + pw + '\') as valid;'
+        '(SELECT count() FROM users where id=\'' + id + '\' and passwd=\'' + toHash(pw) + '\') as valid;'
     console.log(query);
 
     db.serialize(() => {
@@ -88,7 +93,7 @@ function chkValidUser (id, pw, callback)
 function addUser (id, pw, callback)
 {
     var query = 'INSERT INTO users VALUES(' +
-        '\'' + id + '\',\'' + pw + '\');';
+        '\'' + id + '\',\'' + toHash(pw) + '\');';
     console.log(query);
 
     db.serialize(() => {
@@ -109,7 +114,7 @@ function addUser (id, pw, callback)
 function delUser (id, pw, callback)
 {
     var query = 'DELETE FROM users' +
-        ' where id=\'' + id + '\';';
+        ' where id=\'' + id + '\' and passwd=\'' + toHash(pw) + '\';';
     console.log(query);
 
     db.serialize(() => {
