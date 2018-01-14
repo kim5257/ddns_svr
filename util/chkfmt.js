@@ -1,9 +1,8 @@
 var ip = require('ip');
 
-function chkAddUser (body, callback)
+function chkAddUser (id, body, callback)
 {
-    if ( ( body.id == null ) ||
-        ( body.pw == null ) )
+    if ( ( body.pw == null ) )
     {
         callback({result: 'error', msg: '잘못된 형식입니다.'});
     }
@@ -13,10 +12,10 @@ function chkAddUser (body, callback)
     }
 }
 
-function chkDelUser (body, callback)
+function chkDelUser (id, body, callback)
 {
     // chkAddUser과 동일
-    chkAddUser(body, callback);
+    chkAddUser(id, body, callback);
 }
 
 function chkUpdate (body, callback)

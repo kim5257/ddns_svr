@@ -19,18 +19,24 @@ var certOpts = {
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '443');
+var httpPort = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || '3443');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
+var httpServer = http.createServer(app);
 var server = https.createServer(certOpts, app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
+
+httpServer.listen(httpPort);
+httpServer.on('error', onError);
+httpServer.on('listening', onListening);
 
 server.listen(port);
 server.on('error', onError);

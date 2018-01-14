@@ -16,9 +16,8 @@ function toHash (pw)
 
 function chkDupUser (id, pw, callback)
 {
-    var query = 'SELECT '
-        + '(SELECT count() FROM users WHERE id=\'' + id + '\') as duplication,'
-        + '(SELECT count() FROM reserved_id WHERE id=\'' + id + '\') as reserved;'
+    var query = 'SELECT count() as user_dup_cnt FROM users'
+        + ' WHERE id=\'' + id + '\';';
 
     console.log(query);
 
@@ -33,18 +32,12 @@ function chkDupUser (id, pw, callback)
             {
                 console.log('Result: ' + row);
 
-                var duplication = parseInt(row.duplication, 10);
-                var reserved = parseInt(row.reserved, 10);
+                var userDupCnt = parseInt(row.user_dup_cnt, 10);
 
-                if (0 < duplication)
+                if (0 < userDupCnt)
                 {
                     // 에러
                     callback({result: 'error', msg: '이미 등록된 ID 입니다.'});
-                }
-                else if( 0 < reserved )
-                {
-                    // 에러
-                    callback({result: 'error', msg: '예약된 ID 입니다.'});
                 }
                 else
                 {
@@ -59,7 +52,7 @@ function chkValidUser (id, pw, callback)
 {
     var query = 'SELECT ' +
         '(SELECT count() FROM users where id=\'' + id + '\') as exist,' +
-        '(SELECT count() FROM users where id=\'' + id + '\' and passwd=\'' + toHash(pw) + '\') as valid;'
+        '(SELECT count() FROM users where id=\'' + id + '\' and pw=\'' + toHash(pw) + '\') as valid;'
     console.log(query);
 
     db.serialize(() => {
@@ -92,7 +85,7 @@ function chkValidUser (id, pw, callback)
 
 function addUser (id, pw, callback)
 {
-    var query = 'INSERT INTO users VALUES(' +
+    var query = 'INSERT INTO users(id, pw) VALUES(' +
         '\'' + id + '\',\'' + toHash(pw) + '\');';
     console.log(query);
 
@@ -114,7 +107,7 @@ function addUser (id, pw, callback)
 function delUser (id, pw, callback)
 {
     var query = 'DELETE FROM users' +
-        ' where id=\'' + id + '\' and passwd=\'' + toHash(pw) + '\';';
+        ' where id=\'' + id + '\' and pw=\'' + toHash(pw) + '\';';
     console.log(query);
 
     db.serialize(() => {
@@ -127,6 +120,48 @@ function delUser (id, pw, callback)
             else
             {
                callback({result: 'success', msg: null});
+            }
+        });
+    });
+}
+
+function getUsers (callback)
+{
+    var query = 'SELECT id FROM users;'
+
+    db.serialize(() => {
+        db.all(query, (err, rows) => {
+            if ( err )
+            {
+                callback({result: 'error', msg: err.message});
+            }
+            else
+            {
+                console.log(rows);
+                callback({result: 'success', data: rows});
+            }
+        });
+    });
+}
+
+function getUser (id, callback)
+{
+    var query = 'SELECT id FROM users WHERE id=\'' + id + '\';';
+
+    db.serialize(() => {
+        db.get(query, (err, row) => {
+            if ( err )
+            {
+                callback({result: 'error', msg: err.message});
+            }
+            else if ( row == null )
+            {
+                callback({result: 'error', msg: '등록되지 않은 사용자입니다'});
+            }
+            else
+            {
+                console.log(row);
+                callback({result: 'success', data: row});
             }
         });
     });
@@ -162,4 +197,6 @@ exports.chkDupUser = chkDupUser;
 exports.chkValidUser = chkValidUser;
 exports.addUser = addUser;
 exports.delUser = delUser;
+exports.getUsers = getUsers;
+exports.getUser = getUser;
 exports.addAddr = addAddr;

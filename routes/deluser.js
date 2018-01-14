@@ -46,8 +46,6 @@ router.post('/', function(req, res, next) {
             res.send('{"result":"error","msg":"' + result.msg + '"}');
         }
     });
-
-
 }, function(req, res) {
     // bind 정보 제거
     nsupdate.delAddr(req.body.id, (result) => {
