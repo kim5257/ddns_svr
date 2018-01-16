@@ -47,8 +47,6 @@ router.post('/:id', function (req, res, next) {
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    console.log('GET');
-
     dbctrl.getUsers((result) => {
         if ( result.result === 'success' )
         {

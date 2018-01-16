@@ -5,7 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// View
 var index = require('./routes/index');
+var userlist = require('./routes/userlist');
+
+// RESTful APIs
 var users = require('./routes/users');
 var names = require('./routes/names');
 
@@ -33,6 +37,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
+app.use('/userlist', userlist);
 app.use('/users', users);
 app.use('/names', names);
 
