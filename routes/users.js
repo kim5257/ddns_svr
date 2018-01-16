@@ -8,10 +8,12 @@ router.post('/:id', function (req, res, next) {
     console.log('POST, id: ' + req.params.id);
 
     chkfmt.chkAddUser(req.params.id, req.body, (result) => {
-        if (result.result === 'success') {
+        if (result.result === 'success')
+        {
             next();
         }
-        else {
+        else
+        {
             // 에러로 결과 전달
             res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
         }
@@ -102,20 +104,18 @@ router.delete('/:id', function(req, res, next) {
             res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
         }
     });
-}, function (req, res, next) {
+}, function (req, res) {
     // 사용자 정보 제거
     dbctrl.delUser(req.params.id, req.body.pw, (result) => {
         if ( result.result === 'success' )
         {
-            next();
+            res.send('{"result":"success"}');
         }
         else
         {
             res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
         }
     });
-}, function (req, res) {
-    res.send('{"result":"success"}');
 });
 
 module.exports = router;

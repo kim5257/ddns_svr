@@ -167,6 +167,107 @@ function getUser (id, callback)
     });
 }
 
+function chkDupName (name, callback)
+{
+    var query = 'SELECT '
+        + '(SELECT count() FROM names WHERE name=\'' + name + '\') as name_dup_cnt,'
+        + '(SELECT count() FROM resv_names WHERE name=\'' + name + '\') as name_resv_cnt;';
+    console.log(query);
+
+    db.serialize(() => {
+        db.get(query, (err, row) => {
+            if ( err )
+            {
+                console.error(err.message);
+                callback({result: 'error', msg: err.message});
+            }
+            else
+            {
+                console.log('Result: ' + row);
+
+                var nameDupCnt = parseInt(row.name_dup_cnt, 10);
+                var nameResvCnt = parseInt(row.name_resv_cnt, 10);
+
+                if (0 < userDupCnt)
+                {
+                    // 에러
+                    callback({result: 'error', msg: '이미 등록된 이름입니다.'});
+                }
+                else if (0 < nameResvCnt)
+                {
+                    // 에러
+                    callback({result: 'error', msg: '예약된 이름입니다.'});
+                }
+                else
+                {
+                    callback({result: 'success', msg: null});
+                }
+            }
+        });
+    });
+}
+
+function addName (name, id, callback)
+{
+    var query = 'INSERT INTO names(name, id) VALUES(' +
+        '\'' + name + '\',\'' + id + '\');';
+    console.log(query);
+
+    db.serialize(() => {
+        db.run(query, (err) => {
+            if ( err )
+            {
+                console.log(err.message);
+                callback({result: 'error', msg: err.message});
+            }
+            else
+            {
+                callback({result: 'success', msg: null});
+            }
+        });
+    });
+}
+
+function delName (name, callback)
+{
+    var query = 'DELETE FROM names' +
+        ' where name=\'' + name + '\';';
+    console.log(query);
+
+    db.serialize(() => {
+        db.run(query, (err) => {
+            if ( err )
+            {
+                console.log(err.message);
+                callback({result: 'error', msg: err.message});
+            }
+            else
+            {
+                callback({result: 'success', msg: null});
+            }
+        });
+    });
+}
+
+function getNames (callback)
+{
+    var query = 'SELECT name, id FROM names;'
+
+    db.serialize(() => {
+        db.all(query, (err, rows) => {
+            if ( err )
+            {
+                callback({result: 'error', msg: err.message});
+            }
+            else
+            {
+                console.log(rows);
+                callback({result: 'success', data: rows});
+            }
+        });
+    });
+}
+
 function addAddr (id, ip, callback)
 {
     // INSERT INTO bind_info(id, ip, update_time)
@@ -199,4 +300,10 @@ exports.addUser = addUser;
 exports.delUser = delUser;
 exports.getUsers = getUsers;
 exports.getUser = getUser;
+
+exports.chkDupName = chkDupName;
+exports.addName = addName;
+exports.delName = delName;
+exports.getNames = getNames;
+
 exports.addAddr = addAddr;
