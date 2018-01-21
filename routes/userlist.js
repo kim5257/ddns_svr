@@ -5,27 +5,54 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next)
 {
-    console.log('userlist');
-    http.get('http://localhost:3000/users', (userRes) => {
-        if( userRes.statusCode == 200 )
-        {
-            var data = '';
+    console.log('User list');
 
-            userRes.on('data', (chunk) => {
-                data += chunk;
-            }).on('end', () => {
-                res.userlist = JSON.parse(data);
+    var page = (req.query.page!=null)?(req.query.page):(0);
+    var limit = (req.query.limit!=null)?(req.query.limit):(10);
+    var paginationCnt = 10; // 페이지 표시 갯수는 10개로 지정
+
+    var reqOffset = (Number(page) / paginationCnt) * (paginationCnt * limit);
+    var reqLimit = (limit * paginationCnt) + 1;
+
+    console.log('page: ' + reqOffset);
+    console.log('limit: ' + reqLimit);
+
+    var usersUrl = 'http://localhost:3000/users?'
+        + 'offset=' + reqOffset + '&limit=' + reqLimit;
+
+    http.get(usersUrl, (userRes) => {
+        var buffer = '';
+
+        userRes.on('data', (chunk) => {
+            buffer += chunk;
+        }).on('end', () => {
+            var totalData = JSON.parse(buffer);
+            var start = (page % paginationCnt) * limit;
+            var end = start + Number(limit);
+            var userList = totalData.data.slice(start, end);
+            var totalCnt = totalData.data.length;
+
+            console.log(start + ', ' + end);
+
+            if( userRes.statusCode == 200 )
+            {
+                res.data = {    result: totalData.result,
+                                user_list: userList,
+                                total_cnt: totalCnt,
+                                page: page,
+                                limit: limit,
+                                pagination_cnt: paginationCnt
+                            };
                 next();
-            });
-        }
-        else
-        {
-            res.status(503).send('Server error');
-        }
+            }
+            else
+            {
+                res.status(503).send('Server error: ' + data.msg);
+            }
+        });
     });
 }, function(req, res, next) {
-    console.log(res.userlist);
-    res.render('userlist', { title: 'User List', userlist: res.userlist });
+    res.render('userlist', { title: 'User List', data: res.data });
 });
 
 module.exports = router;

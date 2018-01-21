@@ -47,7 +47,19 @@ router.post('/:id', function (req, res, next) {
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    dbctrl.getUsers((result) => {
+    chkfmt.chkGetUsers(req.query.offset, req.query.limit, (result) => {
+        if (result.result === 'success') {
+            next();
+        }
+        else {
+            res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
+}, function(req, res, next) {
+    var offset = parseInt(req.query.offset);
+    var limit = parseInt(req.query.limit);
+
+    dbctrl.getUsers(offset, limit, (result) => {
         if ( result.result === 'success' )
         {
             var body = {result: 'success', data: result.data};

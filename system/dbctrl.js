@@ -125,9 +125,11 @@ function delUser (id, pw, callback)
     });
 }
 
-function getUsers (callback)
+function getUsers (offset, limit, callback)
 {
-    var query = 'SELECT id FROM users;'
+    var query = 'SELECT id FROM users'
+        + ' LIMIT ' + limit + ' OFFSET ' + offset + ';';
+    console.log(query);
 
     db.serialize(() => {
         db.all(query, (err, rows) => {
@@ -137,7 +139,6 @@ function getUsers (callback)
             }
             else
             {
-                console.log(rows);
                 callback({result: 'success', data: rows});
             }
         });
@@ -249,9 +250,11 @@ function delName (name, callback)
     });
 }
 
-function getNames (callback)
+function getNames (offset, limit, callback)
 {
-    var query = 'SELECT name, id FROM names;'
+    var query = 'SELECT name, id FROM names'
+        + ' LIMIT ' + limit + ' OFFSET ' + offset + ';';
+    console.log(query);
 
     db.serialize(() => {
         db.all(query, (err, rows) => {
@@ -261,7 +264,6 @@ function getNames (callback)
             }
             else
             {
-                console.log(rows);
                 callback({result: 'success', data: rows});
             }
         });

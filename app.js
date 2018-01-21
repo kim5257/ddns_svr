@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 // View
 var index = require('./routes/index');
 var userlist = require('./routes/userlist');
+var namelist = require('./routes/namelist');
 
 // RESTful APIs
 var users = require('./routes/users');
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/userlist', userlist);
+app.use('/namelist', namelist);
 app.use('/users', users);
 app.use('/names', names);
 
