@@ -11,7 +11,7 @@ router.get('/', function(req, res, next)
     var limit = (req.query.limit!=null)?(req.query.limit):(10);
     var paginationCnt = 10; // 페이지 표시 갯수는 10개로 지정
 
-    var reqOffset = (Number(page) / paginationCnt) * (paginationCnt * limit);
+    var reqOffset = parseInt(page / paginationCnt) * (paginationCnt * limit);
     var reqLimit = (limit * paginationCnt) + 1;
 
     console.log('page: ' + reqOffset);

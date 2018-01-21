@@ -11,7 +11,7 @@ router.get('/', function(req, res, next)
     var limit = (req.query.limit!=null)?(req.query.limit):(10);
     var paginationCnt = 10; // 페이지 표시 갯수는 10개로 지정
 
-    var reqOffset = (Number(page) / paginationCnt) * (paginationCnt * limit);
+    var reqOffset = parseInt(page / paginationCnt) * (paginationCnt * limit);
     var reqLimit = (limit * paginationCnt) + 1;
 
     console.log('page: ' + reqOffset);
@@ -19,6 +19,13 @@ router.get('/', function(req, res, next)
 
     var usersUrl = 'http://localhost:3000/users?'
         + 'offset=' + reqOffset + '&limit=' + reqLimit;
+
+    if ( ( req.query.searchType != null ) &&
+        ( req.query.searchStr != null ) )
+    {
+        usersUrl += '&searchType=' + req.query.searchType
+            + '&searchStr=' + req.query.searchStr;
+    }
 
     http.get(usersUrl, (userRes) => {
         var buffer = '';
@@ -41,7 +48,9 @@ router.get('/', function(req, res, next)
                                 total_cnt: totalCnt,
                                 page: page,
                                 limit: limit,
-                                pagination_cnt: paginationCnt
+                                pagination_cnt: paginationCnt,
+                                searchType: req.query.searchType,
+                                searchStr: req.query.searchStr
                             };
                 next();
             }

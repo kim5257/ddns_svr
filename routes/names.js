@@ -1,5 +1,6 @@
 var express = require('express');
 var dbctrl = require('../system/dbctrl');
+var nsupdate = require('../system/nsupdate');
 var chkfmt = require('../util/chkfmt');
 var router = express.Router();
 
@@ -50,6 +51,61 @@ router.post('/:name', function (req, res, next) {
         if( result.result === 'success' )
         {
             res.send('{"result":"success"}')
+        }
+        else
+        {
+            // 에러로 결과 전달
+            res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
+});
+
+/* PUT name */
+router.put('/:name', function(req, res, next) {
+    console.log('PUT, name: ' + req.params.name);
+
+    chkfmt.chkAddName(req.params.name, req.body, (result) => {
+        if ( result.result === 'success' )
+        {
+            next();
+        }
+        else
+        {
+            res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
+}, function(req, res, next) {
+    // 비밀번호 확인
+    dbctrl.chkValidName(req.params.name, req.body.id, req.body.pw, (result) => {
+        if( result.result === 'success' )
+        {
+            next();
+        }
+        else
+        {
+            // 에러로 결과 전달
+            res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
+}, function(req, res, next) {
+    // nsupdate 정보 갱신
+    nsupdate.updateAddr(req.params.name, req.body.ip, (result) => {
+        if( result.result === 'success' )
+        {
+            next();
+        }
+        else
+        {
+            // 에러로 결과 전달
+            res.status(400).send('{"result":"error","msg":"' + result.msg + '"}');
+        }
+    });
+}, function(req, res) {
+    // DB 정보 갱신
+    dbctrl.updateAddr(req.params.name, req.body.ip, (result) => {
+        if( result.result === 'success' )
+        {
+            res.send('{"result":"success"}');
         }
         else
         {

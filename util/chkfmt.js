@@ -67,7 +67,7 @@ function chkGetUsers (offset, limit, callback)
 
 function chkAddName (name, body, callback)
 {
-    if ( ( body.name == null ) ||
+    if ( ( body.id == null ) ||
         ( body.pw == null ) )
     {
         callback({result: 'error', msg: '잘못된 형식입니다.'});
@@ -91,7 +91,7 @@ function chkGetNames (offset, limit, callback)
     chkGetUsers(offset, limit, callback);
 }
 
-function chkUpdate (body, callback)
+function chkUpdate (name, body, callback)
 {
     if ( ( body.id == null ) ||
         ( body.pw == null ) ||

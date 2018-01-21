@@ -125,10 +125,18 @@ function delUser (id, pw, callback)
     });
 }
 
-function getUsers (offset, limit, callback)
+function getUsers (offset, limit, searchType, searchStr, callback)
 {
-    var query = 'SELECT id FROM users'
-        + ' LIMIT ' + limit + ' OFFSET ' + offset + ';';
+    var query = 'SELECT id FROM users';
+
+    if ( ( searchType != null ) &&
+        (searchStr != null ) )
+    {
+        query += ' WHERE ' + searchType + ' LIKE \'%' + searchStr + '%\'';
+    }
+
+    query += ' LIMIT ' + limit + ' OFFSET ' + offset + ';';
+
     console.log(query);
 
     db.serialize(() => {
@@ -189,7 +197,7 @@ function chkDupName (name, callback)
                 var nameDupCnt = parseInt(row.name_dup_cnt, 10);
                 var nameResvCnt = parseInt(row.name_resv_cnt, 10);
 
-                if (0 < userDupCnt)
+                if (0 < nameDupCnt)
                 {
                     // 에러
                     callback({result: 'error', msg: '이미 등록된 이름입니다.'});
@@ -198,6 +206,51 @@ function chkDupName (name, callback)
                 {
                     // 에러
                     callback({result: 'error', msg: '예약된 이름입니다.'});
+                }
+                else
+                {
+                    callback({result: 'success', msg: null});
+                }
+            }
+        });
+    });
+}
+
+function chkValidName (name, id, pw, callback)
+{
+    //SELECT count() as exist_cnt
+    //FROM users
+    //INNER JOIN names ON users.id = names.id
+    //WHERE
+    //names.name='kim5257' AND
+    //user.id='kjg' AND
+    //users.pw='123123';
+
+    var query = 'SELECT count() as name_exist_cnt '
+        + 'FROM users '
+        + 'INNER JOIN names ON users.id = names.id '
+        + 'WHERE names.name=\'' + name + '\' AND '
+        + 'users.id=\'' + id + '\' AND '
+        + 'users.pw=\'' + toHash(pw) + '\';';
+
+    console.log(query);
+
+    db.serialize(() => {
+        db.get(query, (err, row) => {
+            if ( err )
+            {
+                console.error(err.message);
+                callback({result: 'error', msg: err.message});
+            }
+            else
+            {
+                var nameExistCnt = parseInt(row.name_exist_cnt, 10);
+
+                console.log('Result: ' + nameExistCnt);
+                if (0 == nameExistCnt)
+                {
+                    // 에러
+                    callback({result: 'error', msg: '등록되지 않은 이름입니다.'});
                 }
                 else
                 {
@@ -252,7 +305,7 @@ function delName (name, callback)
 
 function getNames (offset, limit, callback)
 {
-    var query = 'SELECT name, id FROM names'
+    var query = 'SELECT name, id, ip, update_time FROM names'
         + ' LIMIT ' + limit + ' OFFSET ' + offset + ';';
     console.log(query);
 
@@ -270,15 +323,18 @@ function getNames (offset, limit, callback)
     });
 }
 
-function addAddr (id, ip, callback)
+function updateAddr (name, ip, callback)
 {
-    // INSERT INTO bind_info(id, ip, update_time)
-    // VALUES('kjg', '8.8.8.8',
-    //  (select strftime('%Y%m%d%H%M%S',datetime('now','localtime')))
-    var query = 'INSERT OR REPLACE INTO bind_info(id, ip, update_time) '
-        + 'VALUES(\'' + id + '\',\'' + ip + '\','
-        + '(SELECT strftime(\'%Y%m%d%H%M%S\', '
-        + 'datetime(\'now\',\'localtime\'))));';
+    //UPDATE names
+    //SET
+    //ip='1.215.228.82',
+    //    update_time=(select strftime('%Y%m%d%H%M%S',datetime('now','localtime')))
+    //WHERE name='kim5257';
+    var query = 'UPDATE names SET '
+        + 'ip=\'' + ip + '\', '
+        + 'update_time=(SELECT strftime(\'%Y%m%d%H%M%S\', '
+        + 'datetime(\'now\',\'localtime\'))) '
+        + 'WHERE name=\'' + name + '\';';
     console.log(query);
 
     db.serialize(() => {
@@ -304,8 +360,9 @@ exports.getUsers = getUsers;
 exports.getUser = getUser;
 
 exports.chkDupName = chkDupName;
+exports.chkValidName = chkValidName;
 exports.addName = addName;
 exports.delName = delName;
 exports.getNames = getNames;
 
-exports.addAddr = addAddr;
+exports.updateAddr = updateAddr;
