@@ -46,7 +46,10 @@ block content
                         a(class='page-link') Previous
                 - else
                     li(class='page-item')
-                        a(class='page-link' href='/namelist?page=#{prev_page}&limit=#{data.limit}') Previous
+                        - if ( data.searchType == null || data.searchStr == null )
+                            a(class='page-link' href='/namelist?page=#{prev_page}&limit=#{data.limit}') Previous
+                        - else
+                            a(class='page-link' href='/namelist?page=#{prev_page}&limit=#{data.limit}&searchType=#{data.searchType}&searchStr=#{data.searchStr}') Previous
 
                 - var page_start = parseInt(data.page / data.pagination_cnt) * data.pagination_cnt
                 - var page_end = page_start + parseInt((data.total_cnt - 1) / data.limit)
@@ -58,21 +61,28 @@ block content
                             a(class='page-link') #{idx+1}
                     - else
                         li(class='page-item')
-                            a(class='page-link' href='/namelist?page=#{idx}&limit=#{data.limit}') #{idx+1}
+                            - if ( data.searchType == null || data.searchStr == null )
+                                a(class='page-link' href='/namelist?page=#{idx}&limit=#{data.limit}') #{idx + 1}
+                            - else
+                                a(class='page-link' href='/namelist?page=#{idx}&limit=#{data.limit}&searchType=#{data.searchType}&searchStr=#{data.searchStr}') #{idx + 1}
                 - var next_page = (parseInt(data.page / data.pagination_cnt) + 1) * data.pagination_cnt
                 - if ( (data.pagination_cnt * data.limit) < data.total_cnt )
                     li(class='page-item')
-                        a(class='page-link' href='/namelist?page=#{next_page}&limit=#{data.limit}') Next
+                        - if ( data.searchType == null || data.searchStr == null )
+                            a(class='page-link' href='/namelist?page=#{next_page}&limit=#{data.limit}') Next
+                        - else
+                            a(class='page-link' href='/namelist?page=#{next_page}&limit=#{data.limit}&searchType=#{data.searchType}&searchStr=#{data.searchStr}') Next
                 - else
                     li(class='page-item disabled ')
                         a(class='page-link') Next
-        div(class='row')
-            div(class='col-sm-2')
-                select(class='form-control', name='search_type')
-                    option(value='id') ID
-                    option(value='name') Name
-                    option(value='ip') IP
-            div(class='col-sm-8')
-                input(class='form-control')
-            div(class='col-sm-2')
-                button(type='button' class='btn btn-primary btn-sm btn-block') 찾기
+        form(action='#userlist', method='GET')
+            div(class='row')
+                div(class='col-sm-2')
+                    select(class='form-control', name='searchType')
+                        option(value='name') Name
+                        option(value='id') ID
+                        option(value='ip') IP
+                div(class='col-sm-8')
+                    input(class='form-control' name='searchStr')
+                div(class='col-sm-2')
+                    button(type='submit' class='btn btn-primary btn-sm btn-block') 찾기

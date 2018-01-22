@@ -303,10 +303,18 @@ function delName (name, callback)
     });
 }
 
-function getNames (offset, limit, callback)
+function getNames (offset, limit, searchType, searchStr, callback)
 {
-    var query = 'SELECT name, id, ip, update_time FROM names'
-        + ' LIMIT ' + limit + ' OFFSET ' + offset + ';';
+    var query = 'SELECT name, id, ip, update_time FROM names';
+
+    if ( ( searchType != null ) &&
+        (searchStr != null ) )
+    {
+        query += ' WHERE ' + searchType + ' LIKE \'%' + searchStr + '%\'';
+    }
+
+    query += ' LIMIT ' + limit + ' OFFSET ' + offset + ';';
+
     console.log(query);
 
     db.serialize(() => {

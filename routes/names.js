@@ -128,8 +128,17 @@ router.get('/', function(req, res, next) {
 }, function(req, res) {
     var offset = parseInt(req.query.offset);
     var limit = parseInt(req.query.limit);
+    var searchType = null;
+    var searchStr = null;
 
-    dbctrl.getNames(offset, limit, (result) => {
+    if ( ( req.query.searchType != null ) &&
+        ( req.query.searchStr != null ) )
+    {
+        searchType = req.query.searchType;
+        searchStr = req.query.searchStr;
+    }
+
+    dbctrl.getNames(offset, limit, searchType, searchStr, (result) => {
         if ( result.result === 'success' )
         {
             var body = {result: 'success', data: result.data};

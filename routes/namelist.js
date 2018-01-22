@@ -20,6 +20,13 @@ router.get('/', function(req, res, next)
     var usersUrl = 'http://localhost:3000/names?'
         + 'offset=' + reqOffset + '&limit=' + reqLimit;
 
+    if ( ( req.query.searchType != null ) &&
+        ( req.query.searchStr != null ) )
+    {
+        usersUrl += '&searchType=' + req.query.searchType
+            + '&searchStr=' + req.query.searchStr;
+    }
+
     http.get(usersUrl, (userRes) => {
         var buffer = '';
 
@@ -41,7 +48,9 @@ router.get('/', function(req, res, next)
                     total_cnt: totalCnt,
                     page: page,
                     limit: limit,
-                    pagination_cnt: paginationCnt
+                    pagination_cnt: paginationCnt,
+                    searchType: req.query.searchType,
+                    searchStr: req.query.searchStr
                 };
                 next();
             }
