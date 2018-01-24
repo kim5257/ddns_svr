@@ -1,5 +1,6 @@
 extends layout
-
+block init
+    - var navCursor = 'userlist'
 block content
     script(type='text/javascript').
 
@@ -17,9 +18,7 @@ block content
             }
         }
 
-    div(class='container')
-        p
-            User List
+    div(class='container-fluid')
         table(class="table table-condensed table-hover")
             thead
                 tr

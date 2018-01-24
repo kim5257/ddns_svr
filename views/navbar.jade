@@ -1,0 +1,10 @@
+- var navList = [{key:'userlist', val: 'User List'},{key:'namelist', val: 'Name List'}]
+
+ul(class='nav nav-pills nav-stacked')
+    each item in navList
+        - if ( navCursor === item.key )
+            li(class='active')
+                a #{item.val}
+        - else
+            li
+                a(href='/#{item.key}') #{item.val}
