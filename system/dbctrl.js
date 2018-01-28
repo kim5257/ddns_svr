@@ -6,7 +6,15 @@ var db = new sqlite3.Database('./db/data.db', (err) => {
     {
         return console.error(err.message);
     }
-    console.log('Connected to the SQLite database.');
+    console.log('Connected to the DDNS database.');
+});
+
+var dbAdmin = new sqlite3.Database('./db/admin.db', (err) => {
+    if ( err )
+    {
+        return console.error(err.message);
+    }
+    console.log('Connect to the Admin database.');
 });
 
 function toHash (pw)
@@ -360,6 +368,41 @@ function updateAddr (name, ip, callback)
     });
 }
 
+function chkValidAdmin ( id, pw, callback )
+{
+    var query = 'SELECT ' +
+        '(SELECT count() FROM admins where id=\'' + id + '\') as exist,' +
+        '(SELECT count() FROM admins where id=\'' + id + '\' and pw=\'' + toHash(pw) + '\') as valid;'
+    console.log(query);
+
+    dbAdmin.serialize(() => {
+        dbAdmin.get(query, (err, row) => {
+            if ( err ) {
+                console.error(err.message);
+            }
+
+            var exist = parseInt(row.exist, 10);
+            var valid = parseInt(row.valid, 10);
+
+            console.log('Result: ' + exist + ', ' + valid);
+            if ( 0 < valid )
+            {
+                callback({result: 'success', msg: null});
+            }
+            else if ( 0 < exist )
+            {
+                // 에러
+                callback({result: 'error', msg: '올바르지 않은 비밀번호입니다.'});
+            }
+            else
+            {
+                // 에러
+                callback({result: 'error', msg: '등록되지 않은 사용자입니다.'});
+            }
+        });
+    });
+}
+
 exports.chkDupUser = chkDupUser;
 exports.chkValidUser = chkValidUser;
 exports.addUser = addUser;
@@ -374,3 +417,5 @@ exports.delName = delName;
 exports.getNames = getNames;
 
 exports.updateAddr = updateAddr;
+
+exports.chkValidAdmin = chkValidAdmin;

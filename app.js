@@ -4,9 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var passport = require('passport');
+var flash = require('express-flash');
+var auth = require('./routes/auth');
 
 // View
 var index = require('./routes/index');
+var login = require('./routes/login');
+var topbar = require('./routes/topbar');
 var navbar = require('./routes/navbar');
 var userlist = require('./routes/userlist');
 var namelist = require('./routes/namelist');
@@ -18,11 +24,6 @@ var names = require('./routes/names');
 // Load system scripts
 var chkexpire = require('./system/chkexpire');
 var dbctrl = require('./system/dbctrl');
-
-// RESTful APIs
-var adduser = require('./routes/adduser');
-var deluser = require('./routes/deluser');
-var update = require('./routes/update');
 
 var app = express();
 
@@ -38,17 +39,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Setting passport
+app.use(session({secret: 'secret', resave: true, saveUninitialized: false}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+auth();
+
 app.use('/', index);
+app.use('/login', login);
+app.use('/topbar', topbar);
 app.use('/navbar', navbar);
 app.use('/userlist', userlist);
 app.use('/namelist', namelist);
 app.use('/users', users);
 app.use('/names', names);
-
-// Mapping RESTful APIs
-app.use('/adduser', adduser);
-app.use('/deluser', deluser);
-app.use('/update', update);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

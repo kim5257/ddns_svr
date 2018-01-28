@@ -33,7 +33,7 @@ block content
                 each item in data.name_list
                     tr
                         td
-                            input(type='checkbox', class='form-check-input' id='chk_#{item.id}')
+                            input(type='checkbox', id='chk_#{item.id}')
                         td #{item.name}
                         td #{item.id}
                         td #{item.ip}
@@ -75,7 +75,7 @@ block content
                 - else
                     li(class='page-item disabled ')
                         a(class='page-link') Next
-        form(action='#userlist', method='GET')
+        form(action='/namelist', method='GET')
             div(class='row')
                 div(class='col-sm-2')
                     select(class='form-control', name='searchType')

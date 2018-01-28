@@ -28,8 +28,8 @@ block content
             tbody(id='user_list')
                 each item in data.user_list
                     tr
-                        td
-                            input(type='checkbox', class='form-check-input' id='chk_#{item.id}')
+                        td(width='40px')
+                            input(type='checkbox', id='chk_#{item.id}')
                         td #{item.id}
         nav(class='text-center')
             ul(class='pagination justify-content-sm-center')
@@ -68,7 +68,7 @@ block content
                 - else
                     li(class='page-item disabled ')
                         a(class='page-link') Next
-        form(action='#userlist', method='GET')
+        form(action='/userlist', method='GET')
             div(class='row')
                 div(class='col-sm-2')
                     select(class='form-control', name='searchType')

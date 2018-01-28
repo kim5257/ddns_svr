@@ -3,8 +3,17 @@ var http = require('http');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next)
-{
+router.get('/', function(req, res, next) {
+    if ( req.isAuthenticated() )
+    {
+        console.log(JSON.stringify(req.authInfo));
+        next();
+    }
+    else
+    {
+        res.redirect('/login');
+    }
+}, function(req, res, next) {
     console.log('User list');
 
     var page = (req.query.page!=null)?(req.query.page):(0);
