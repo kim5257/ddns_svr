@@ -3,7 +3,17 @@ var http = require('http');
 var router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next)
+router.get('/', function(req, res, next) {
+    if ( req.isAuthenticated() )
+    {
+        console.log('Info: ' + req.user);
+        next();
+    }
+    else
+    {
+        res.redirect('/login');
+    }
+}, function(req, res, next)
 {
     console.log('Name list');
 
@@ -50,7 +60,8 @@ router.get('/', function(req, res, next)
                     limit: limit,
                     pagination_cnt: paginationCnt,
                     searchType: req.query.searchType,
-                    searchStr: req.query.searchStr
+                    searchStr: req.query.searchStr,
+                    user: req.user
                 };
                 next();
             }

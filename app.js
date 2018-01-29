@@ -12,6 +12,7 @@ var auth = require('./routes/auth');
 // View
 var index = require('./routes/index');
 var login = require('./routes/login');
+var logout = require('./routes/logout');
 var topbar = require('./routes/topbar');
 var navbar = require('./routes/navbar');
 var userlist = require('./routes/userlist');
@@ -48,6 +49,7 @@ auth();
 
 app.use('/', index);
 app.use('/login', login);
+app.use('/logout', logout);
 app.use('/topbar', topbar);
 app.use('/navbar', navbar);
 app.use('/userlist', userlist);

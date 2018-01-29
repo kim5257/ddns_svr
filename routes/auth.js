@@ -13,7 +13,7 @@ module.exports = () => {
 
     passport.deserializeUser((user, done) => {
         console.log('deserializeUser');
-        done(null, 'tmp');
+        done(null, user);
     });
 
     passport.use(new LocalStrategy({

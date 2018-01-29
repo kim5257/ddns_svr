@@ -17,7 +17,6 @@ block content
                 }
             }
         }
-
     div(class='container-fluid')
         table(class="table table-condensed table-hover")
             thead
@@ -31,7 +30,7 @@ block content
                         td(width='40px')
                             input(type='checkbox', id='chk_#{item.id}')
                         td #{item.id}
-        nav(class='text-center')
+        nav
             ul(class='pagination justify-content-sm-center')
                 - var prev_page = (parseInt(data.page / data.pagination_cnt) * data.pagination_cnt) - 1
                 - if ( data.page < data.pagination_cnt )

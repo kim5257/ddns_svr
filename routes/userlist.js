@@ -6,7 +6,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
     if ( req.isAuthenticated() )
     {
-        console.log(JSON.stringify(req.authInfo));
+        console.log('Info: ' + req.user);
         next();
     }
     else
@@ -59,7 +59,8 @@ router.get('/', function(req, res, next) {
                                 limit: limit,
                                 pagination_cnt: paginationCnt,
                                 searchType: req.query.searchType,
-                                searchStr: req.query.searchStr
+                                searchStr: req.query.searchStr,
+                                user: req.user
                             };
                 next();
             }
